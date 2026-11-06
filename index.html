@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>웨비나 신청 페이지</title>
+  <meta name="description" content="무료 온라인 웨비나 참가 신청 페이지">
+  <meta property="og:title" content="웨비나 신청 페이지">
+  <meta property="og:description" content="무료 온라인 웨비나 참가 신청 페이지">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  
+  <style>
+    :root {
+      --blue: #3182f6;
+      --blue-dark: #1b64da;
+      --blue-soft: #e8f3ff;
+      --green: #059669;
+      --green-soft: #ecfdf5;
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --red: #e11d48;
+      --red-soft: #fff1f2;
+      --bg: #f4f6fa;
+      --surface: #ffffff;
+      --ink: #191f28;
+      --text: #4e5968;
+      --muted: #8b95a1;
+      --line: #e5e8eb;
+      --field: #f2f4f6;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Pretendard Variable", Pretendard, -apple-system, "Segoe UI", "Noto Sans KR", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    [hidden] { display: none !important; }
+    .defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+    /* Top Bar Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+    .brand-wordmark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 0 4px var(--blue-soft);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .nav-link {
+      color: var(--text);
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.15s;
+    }
+    .nav-link:hover { color: var(--blue); }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .btn-apply-header {
+      padding: 9px 18px;
+      border-radius: 999px;
+      border: 0;
+      background: var(--blue);
+      color: #fff;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(49, 130, 246, 0.28);
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-apply-header:hover { background: var(--blue-dark); transform: translateY(-1px); }
+
+    /* Main Container Layout */
+    .wrap {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 36px 24px 64px;
+    }
+
+    .attendee-grid {
+      display: grid;
+      gap: 24px;
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .attendee-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      box-shadow: 0 2px 14px rgba(25, 31, 40, 0.03);
+    }
+    .pad { padding: 32px 28px; }
+    .col { display: flex; flex-direction: column; gap: 24px; }
+
+    /* Hero Card */
+    .hero {
+      overflow: hidden;
+      background: linear-gradient(180deg, #eef6ff 0%, #ffffff 65%);
+    }
+    .hero-art { padding: 24px 24px 0; }
+    .hero-art svg { display: block; width: 100%; height: auto; }
+    .hero-txt { padding: 16px 32px 32px; }
+
+    .live-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: var(--blue);
+      font-size: 0.84rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      color: var(--ink);
+      font-size: clamp(1.8rem, 4vw, 2.3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.25;
+      text-wrap: balance;
+    }
+    h2 {
+      margin: 0 0 14px;
+      color: var(--ink);
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .lead {
+      color: var(--text);
+      font-size: 1.02rem;
+      margin: 0;
+      line-height: 1.65;
+    }
+
+    /* Event Details Grid */
+    .meta-rows {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: #f8fafc;
+    }
+    .meta-row svg { width: 40px; height: 40px; flex-shrink: 0; }
+    .meta-row small { display: block; color: var(--muted); font-size: 0.8rem; font-weight: 600; }
+    .meta-row strong { color: var(--ink); font-weight: 700; font-size: 0.98rem; }
+
+    .curriculum-list {
+      list-style: none;
+      margin: 0 0 28px;
+      padding: 0;
+      display: grid;
+      gap: 12px;
+    }
+    .curriculum-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      color: var(--ink);
+      font-size: 0.96rem;
+    }
+    .curriculum-index {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-weight: 800;
+      font-size: 0.78rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Speaker Card */
+    .speaker-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      margin-bottom: 28px;
+    }
+    .speaker-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3182f6, #1b64da);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(49, 130, 246, 0.25);
+    }
+    .speaker-info h3 { margin: 0 0 2px; font-size: 1.05rem; font-weight: 700; color: var(--ink); }
+    .speaker-info p { margin: 0; font-size: 0.88rem; color: var(--muted); }
+
+    /* FAQ List */
+    .faq-list {
+      display: grid;
+      gap: 12px;
+    }
+    .faq-item {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: #f8fafc;
+      border: 1px solid var(--line);
+    }
+    .faq-q { font-weight: 700; color: var(--ink); font-size: 0.95rem; margin-bottom: 4px; }
+    .faq-a { font-size: 0.88rem; color: var(--text); margin: 0; }
+
+    /* Registration Form Card */
+    .form-panel {
+      position: sticky;
+      top: 84px;
+    }
+    .form-title { margin-bottom: 6px; font-size: 1.45rem; font-weight: 800; }
+    .form-subtitle { color: var(--muted); font-size: 0.92rem; margin: 0 0 20px; }
+
+    .field-group { margin-bottom: 18px; }
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--ink);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+    label .req { color: var(--red); margin-left: 2px; }
+    label .opt { color: var(--muted); font-weight: 400; font-size: 0.8rem; margin-left: 4px; }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    input::placeholder, textarea::placeholder { color: #abb3bf; }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.15);
+    }
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1.5 1.5l5.5 5.5 5.5-5.5' fill='none' stroke='%238b95a1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    .agree-box {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin: 20px 0 24px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      font-size: 0.86rem;
+      color: var(--text);
+    }
+    .agree-box input {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--blue);
+      flex-shrink: 0;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      border: 0;
+      border-radius: var(--radius-md);
+      background: linear-gradient(180deg, #428eff, var(--blue));
+      color: #fff;
+      font: inherit;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 16px rgba(49, 130, 246, 0.3);
+      transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
+    }
+    .btn-primary:hover { background: linear-gradient(180deg, #3284ff, var(--blue-dark)); }
+    .btn-primary:active { transform: translateY(1px); }
+    .btn-primary:disabled { opacity: 0.6; cursor: wait; }
+
+    .error-banner {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: var(--red-soft);
+      border: 1px solid #fecdd3;
+      color: var(--red);
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    /* Success Card */
+    .success-card {
+      text-align: center;
+      padding: 40px 28px;
+    }
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: var(--green-soft);
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(5, 150, 105, 0.18);
+    }
+    .ticket-box {
+      margin: 24px 0;
+      padding: 18px;
+      border-radius: var(--radius-md);
+      background: #f8fafc;
+      border: 1px dashed var(--line);
+      text-align: left;
+      font-size: 0.92rem;
+    }
+    .ticket-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+    }
+    .ticket-row + .ticket-row { border-top: 1px solid #f1f5f9; }
+    .ticket-row span:first-child { color: var(--muted); }
+    .ticket-row span:last-child { color: var(--ink); font-weight: 700; text-align: right; }
+
+    .btn-ghost {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background 0.15s;
+    }
+    .btn-ghost:hover { background: #f8fafc; }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      padding: 12px 22px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      z-index: 200;
+      opacity: 0;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s;
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .toast-success { background: #065f46; }
+    .toast-error { background: #9f1239; }
+
+    /* Spinner */
+    .spinner {
+      width: 18px;
+      height: 18px;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    footer {
+      padding: 32px 0 48px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.84rem;
+      border-top: 1px solid var(--line);
+      margin-top: 48px;
+    }
+    .admin-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+      margin-top: 8px;
+      display: inline-block;
+      transition: color 0.15s;
+    }
+    .admin-link:hover { color: var(--blue); }
+  </style>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "firebase/app": "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js",
+      "firebase/auth": "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js",
+      "firebase/firestore": "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- Common 3D Clay Graphics Defs -->
+  <svg class="defs" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="gBlue" x1="0.1" y1="0" x2="0.9" y2="1">
+        <stop offset="0" stop-color="#7db4ff"/>
+        <stop offset="0.5" stop-color="#3182f6"/>
+        <stop offset="1" stop-color="#1b64da"/>
+      </linearGradient>
+      <linearGradient id="gWhite" x1="0.1" y1="0" x2="0.9" y2="1">
+        <stop offset="0" stop-color="#ffffff"/>
+        <stop offset="1" stop-color="#e3eaf4"/>
+      </linearGradient>
+      <linearGradient id="gLight" x1="0.1" y1="0" x2="0.9" y2="1">
+        <stop offset="0" stop-color="#f3f8ff"/>
+        <stop offset="1" stop-color="#d6e6fc"/>
+      </linearGradient>
+      <filter id="fShadow" x="-30%" y="-30%" width="160%" height="170%">
+        <feDropShadow dx="0" dy="12" stdDeviation="9" flood-color="#3182f6" flood-opacity="0.22"/>
+      </filter>
+      <filter id="fShadowSm" x="-40%" y="-40%" width="180%" height="190%">
+        <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#3182f6" flood-opacity="0.2"/>
+      </filter>
+      <filter id="fBlur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>
+
+      <symbol id="ic-cal" viewBox="0 0 48 48">
+        <rect x="6" y="9" width="36" height="33" rx="12" fill="url(#gBlue)" filter="url(#fShadowSm)"/>
+        <rect x="14" y="21" width="20" height="14" rx="5" fill="#fff" opacity="0.95"/>
+        <rect x="15" y="4" width="6" height="12" rx="3" fill="url(#gWhite)"/>
+        <rect x="27" y="4" width="6" height="12" rx="3" fill="url(#gWhite)"/>
+        <ellipse cx="15" cy="16" rx="6" ry="3" fill="#fff" opacity="0.45" filter="url(#fBlur)"/>
+      </symbol>
+      <symbol id="ic-video" viewBox="0 0 48 48">
+        <rect x="5" y="9" width="38" height="31" rx="12" fill="url(#gBlue)" filter="url(#fShadowSm)"/>
+        <path d="M20 18.5l10.5 5.5L20 29.5z" fill="#fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>
+        <ellipse cx="15" cy="14" rx="6" ry="3" fill="#fff" opacity="0.45" filter="url(#fBlur)"/>
+      </symbol>
+      <symbol id="ic-people" viewBox="0 0 48 48">
+        <rect x="6" y="7" width="36" height="35" rx="13" fill="url(#gBlue)" filter="url(#fShadowSm)"/>
+        <circle cx="24" cy="21" r="6.5" fill="#fff"/>
+        <path d="M13 36c0-6.5 5-9.5 11-9.5s11 3 11 9.5z" fill="#fff"/>
+        <ellipse cx="15" cy="13" rx="6" ry="3" fill="#fff" opacity="0.45" filter="url(#fBlur)"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- Top Bar Navigation -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="/" class="brand-wordmark">
+        <span class="brand-dot"></span>
+        <span>AI 웨비나 2026</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#overview" class="nav-link">웨비나 개요</a>
+        <a href="#curriculum" class="nav-link">프로그램</a>
+        <a href="#speaker" class="nav-link">진행자 소개</a>
+        <a href="#faq" class="nav-link">자주 묻는 질문</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button type="button" id="scrollToApplyBtn" class="btn-apply-header">지금 참가 신청하기</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Attendee Registration Main View -->
+  <main class="wrap">
+    <div class="attendee-grid">
+      <!-- Left Column: Webinar Overview & Content -->
+      <div class="col" id="overview">
+        <!-- Hero Card -->
+        <section class="card hero">
+          <div class="hero-art">
+            <svg viewBox="0 0 520 280" role="img" aria-label="3D 점토 스타일 온라인 웨비나 일러스트">
+              <ellipse cx="260" cy="260" rx="190" ry="14" fill="#3182f6" opacity="0.18" filter="url(#fBlur)"/>
+              <rect x="64" y="210" width="392" height="30" rx="15" fill="url(#gWhite)" filter="url(#fShadow)"/>
+              <rect x="92" y="215" width="336" height="5" rx="2.5" fill="#fff" opacity="0.9"/>
+              <rect x="105" y="30" width="310" height="190" rx="28" fill="url(#gWhite)" filter="url(#fShadow)"/>
+              <rect x="122" y="46" width="276" height="158" rx="18" fill="url(#gLight)"/>
+              <rect x="150" y="135" width="80" height="65" rx="32" fill="url(#gBlue)"/>
+              <circle cx="190" cy="100" r="28" fill="url(#gBlue)" filter="url(#fShadowSm)"/>
+              <ellipse cx="180" cy="88" rx="11" ry="6" fill="#fff" opacity="0.55" filter="url(#fBlur)"/>
+              <rect x="250" y="65" width="132" height="70" rx="16" fill="#fff" filter="url(#fShadowSm)"/>
+              <rect x="267" y="82" width="58" height="10" rx="5" fill="url(#gBlue)"/>
+              <rect x="267" y="100" width="90" height="7" rx="3.5" fill="#d6e6fc"/>
+              <rect x="267" y="113" width="66" height="7" rx="3.5" fill="#d6e6fc"/>
+              <circle cx="272" cy="170" r="18" fill="url(#gWhite)" filter="url(#fShadowSm)"/>
+              <circle cx="272" cy="165" r="5.5" fill="url(#gBlue)"/><rect x="263" y="172" width="18" height="8" rx="4" fill="url(#gBlue)"/>
+              <circle cx="318" cy="170" r="18" fill="url(#gWhite)" filter="url(#fShadowSm)"/>
+              <circle cx="318" cy="165" r="5.5" fill="url(#gBlue)"/><rect x="309" y="172" width="18" height="8" rx="4" fill="url(#gBlue)"/>
+              <circle cx="364" cy="170" r="18" fill="url(#gWhite)" filter="url(#fShadowSm)"/>
+              <circle cx="364" cy="165" r="5.5" fill="url(#gBlue)"/><rect x="355" y="172" width="18" height="8" rx="4" fill="url(#gBlue)"/>
+              <circle cx="52" cy="80" r="26" fill="url(#gBlue)" filter="url(#fShadow)"/>
+              <circle cx="462" cy="50" r="24" fill="url(#gBlue)" filter="url(#fShadow)"/>
+            </svg>
+          </div>
+          <div class="hero-txt">
+            <div class="live-chip">
+              <span class="live-dot"></span>
+              <span id="liveCounterBadge">현재 실시간 참가자 모집 중!</span>
+            </div>
+            <h1>실무에서 바로 쓰는 AI 프로덕트 기획 & 빌드</h1>
+            <p class="lead">사용자 문제 정의부터 프롬프트 전략, 빠른 화면 프로토타이핑 및 실제 웹 배포까지. 비개발자도 바로 적용할 수 있는 핵심 프로세스를 90분 동안 무료로 공개합니다.</p>
+          </div>
+        </section>
+
+        <!-- Information Card -->
+        <section class="card pad">
+          <div class="meta-rows">
+            <div class="meta-row">
+              <svg aria-hidden="true"><use href="#ic-cal"/></svg>
+              <div><small>일시</small><strong>2026년 11월 19일 (목) 오후 8:00 – 9:30 (90분)</strong></div>
+            </div>
+            <div class="meta-row">
+              <svg aria-hidden="true"><use href="#ic-video"/></svg>
+              <div><small>진행 방식</small><strong>Zoom 온라인 실시간 생중계 (링크는 신청 이메일 발송)</strong></div>
+            </div>
+            <div class="meta-row">
+              <svg aria-hidden="true"><use href="#ic-people"/></svg>
+              <div><small>참가 대상 및 비용</small><strong>AI 프로덕트 기획에 관심 있는 누구나 · 무료 참가</strong></div>
+            </div>
+          </div>
+
+          <h2 id="curriculum">이런 내용을 다뤄요</h2>
+          <ul class="curriculum-list">
+            <li class="curriculum-item">
+              <span class="curriculum-index">01</span>
+              <div><strong>AI 제품의 문제 정의</strong> — 고객이 실제로 돈을 지불하는 AI 가치와 페인포인트 도출법</div>
+            </li>
+            <li class="curriculum-item">
+              <span class="curriculum-index">02</span>
+              <div><strong>LLM 프롬프트 & 상호작용 설계</strong> — 환각을 줄이고 사용성을 극대화하는 프롬프트 구조화 기법</div>
+            </li>
+            <li class="curriculum-item">
+              <span class="curriculum-index">03</span>
+              <div><strong>초고속 프로토타이핑 & 배포</strong> — 코딩 부담 없이 웹사이트를 구현하고 실시간 데이터베이스 연동하기</div>
+            </li>
+            <li class="curriculum-item">
+              <span class="curriculum-index">04</span>
+              <div><strong>실시간 질의응답 (Q&A)</strong> — 신청 시 남겨주신 사전 질문 및 커리어/프로덕트 1:1 상담 세션</div>
+            </li>
+          </ul>
+
+          <h2 id="speaker">진행자 소개</h2>
+          <div class="speaker-box">
+            <div class="speaker-avatar">하늘</div>
+            <div class="speaker-info">
+              <h3>김하늘 · AI 프로덕트 매니저</h3>
+              <p>멀티캠퍼스 AI 프로덕트 매니저 과정 수강 · AI 서비스 기획 및 실전 웹 애플리케이션 빌더</p>
+            </div>
+          </div>
+
+          <h2 id="faq">자주 묻는 질문 (FAQ)</h2>
+          <div class="faq-list">
+            <div class="faq-item">
+              <div class="faq-q">Q. 사전 지식이나 코딩 경험이 없어도 들을 수 있나요?</div>
+              <p class="faq-a">네, 비개발자와 기획자, 디자이너, 학생 모두 쉽게 이해할 수 있도록 실제 사례와 직관적인 도구 중심의 실무 노하우로 진행됩니다.</p>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">Q. Zoom 링크는 언제 어떻게 받나요?</div>
+              <p class="faq-a">신청 완료 즉시 안내 메일이 발송되며, 행사 당일 오전 10시와 시작 1시간 전에 입력하신 이메일로 접속 링크를 리마인드해 드립니다.</p>
+            </div>
+            <div class="faq-item">
+              <div class="faq-q">Q. 웨비나 다시보기(녹화본)가 제공되나요?</div>
+              <p class="faq-a">실시간 참가 신청을 완료하신 분들에 한해 웨비나 종료 후 7일간 시청 가능한 다시보기 링크를 이메일로 보내드립니다.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Registration Form Panel -->
+      <div class="form-panel" id="regFormCard">
+        <section class="card pad" id="formViewWrapper">
+          <h2 class="form-title">웨비나 무료 참가 신청</h2>
+          <p class="form-subtitle">참가 링크 발송을 위해 필수 정보를 입력해주세요.</p>
+
+          <form id="regForm" novalidate>
+            <div class="field-group">
+              <label for="name">이름<span class="req">*</span></label>
+              <input id="name" name="name" type="text" autocomplete="name" placeholder="홍길동" required maxlength="50">
+            </div>
+
+            <div class="field-group">
+              <label for="email">이메일<span class="req">*</span></label>
+              <input id="email" name="email" type="email" autocomplete="email" placeholder="example@email.com (Zoom 링크 수신용)" required maxlength="100">
+            </div>
+
+            <div class="field-group">
+              <label for="phone">연락처<span class="opt">(선택)</span></label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="010-0000-0000" maxlength="30">
+            </div>
+
+            <div class="field-group">
+              <label for="job">직군 / 소속<span class="opt">(선택)</span></label>
+              <select id="job" name="job">
+                <option value="">선택해주세요</option>
+                <option value="기획/PM">기획 / PM / PO</option>
+                <option value="개발자">소프트웨어 개발자</option>
+                <option value="디자이너">UI/UX 디자이너</option>
+                <option value="마케터">마케팅 / 그로스</option>
+                <option value="학생">대학(원)생 / 취업준비생</option>
+                <option value="창업가/기타">창업가 / 프리랜서 / 기타</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label for="question">사전 질문 및 기대평<span class="opt">(선택)</span></label>
+              <textarea id="question" name="question" placeholder="연사에게 궁금한 점이나 이번 웨비나에서 꼭 얻어가고 싶은 점을 적어주세요." maxlength="500"></textarea>
+            </div>
+
+            <label class="agree-box">
+              <input id="agree" name="agree" type="checkbox" required>
+              <span>[필수] 웨비나 참가 안내 및 Zoom 접속 링크 발송을 위한 개인정보(이름, 이메일) 수집 및 이용에 동의합니다.</span>
+            </label>
+
+            <button type="submit" id="formSubmitBtn" class="btn-primary">
+              웨비나 무료 신청하기
+            </button>
+
+            <div id="formErrorAlert" class="error-banner" role="alert" hidden></div>
+          </form>
+        </section>
+
+        <!-- Success Ticket View -->
+        <section class="card success-card" id="successViewWrapper" hidden>
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h2>신청이 완료되었습니다!</h2>
+          <p class="lead"><strong id="successApplicantName"></strong>님, 웨비나 참가 신청이 정상적으로 접수되었습니다.</p>
+
+          <div class="ticket-box">
+            <div class="ticket-row">
+              <span>접수 번호</span>
+              <span id="successRegId" class="font-mono text-xs"></span>
+            </div>
+            <div class="ticket-row">
+              <span>이메일</span>
+              <span id="successApplicantEmail"></span>
+            </div>
+            <div class="ticket-row">
+              <span>직군</span>
+              <span id="successApplicantJob"></span>
+            </div>
+            <div class="ticket-row">
+              <span>일시</span>
+              <span>11월 19일 (목) 오후 8:00</span>
+            </div>
+            <div class="ticket-row">
+              <span>참가 방식</span>
+              <span>Zoom 온라인 생중계</span>
+            </div>
+          </div>
+
+          <p style="font-size:0.86rem;color:var(--muted);margin:0 0 16px;">
+            ※ 행사 당일 입력하신 이메일로 Zoom 생중계 링크를 안내해 드립니다.
+          </p>
+
+          <button type="button" id="registerAnotherBtn" class="btn-ghost">
+            다른 사람 추가 신청하기
+          </button>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 AI 프로덕트 웨비나 운영팀 · 본 행사는 참가자 모집 관리를 위해 Firebase Firestore를 사용합니다.</p>
+    <a href="/admin" class="admin-link">주최자 관리자 페이지 (/admin) ↗</a>
+  </footer>
+
+  <script type="module" src="/register.js"></script>
+</body>
+</html>

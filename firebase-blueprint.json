@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "Registration": {
+      "title": "Registration",
+      "description": "Event participant registration record",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Applicant full name",
+          "minLength": 1,
+          "maxLength": 50
+        },
+        "email": {
+          "type": "string",
+          "description": "Applicant email address",
+          "minLength": 5,
+          "maxLength": 100
+        },
+        "phone": {
+          "type": "string",
+          "description": "Applicant phone number",
+          "maxLength": 30
+        },
+        "job": {
+          "type": "string",
+          "description": "Applicant job role or occupation",
+          "maxLength": 50
+        },
+        "question": {
+          "type": "string",
+          "description": "Questions or expectations for the webinar",
+          "maxLength": 500
+        },
+        "status": {
+          "type": "string",
+          "description": "Registration status",
+          "enum": ["pending", "confirmed", "cancelled"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp string of registration"
+        }
+      },
+      "required": ["name", "email", "status", "createdAt"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Application settings and integration metadata",
+      "type": "object",
+      "properties": {
+        "spreadsheetId": {
+          "type": "string",
+          "description": "Linked Google Spreadsheet ID",
+          "maxLength": 128
+        },
+        "spreadsheetUrl": {
+          "type": "string",
+          "description": "Linked Google Spreadsheet URL",
+          "maxLength": 500
+        },
+        "spreadsheetTitle": {
+          "type": "string",
+          "description": "Title of the linked Google Spreadsheet",
+          "maxLength": 200
+        },
+        "lastSyncedAt": {
+          "type": "string",
+          "description": "Timestamp of last synchronization",
+          "maxLength": 50
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/registrations/{registrationId}": {
+      "schema": "Registration",
+      "description": "Collection of event registrations"
+    },
+    "/settings/{settingId}": {
+      "schema": "Setting",
+      "description": "Collection of application settings"
+    }
+  }
+}

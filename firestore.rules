@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'nolaeng3@gmail.com' ||
+        (request.auth.token.email_verified == true && request.auth.token.email.matches('.*@.*')) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidRegistration(data) {
+      return data.keys().hasAll(['name', 'email', 'status', 'createdAt']) &&
+             data.keys().hasOnly(['name', 'email', 'phone', 'job', 'question', 'status', 'createdAt']) &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 50 &&
+             data.email is string && data.email.size() >= 5 && data.email.size() <= 100 &&
+             (!('phone' in data) || (data.phone is string && data.phone.size() <= 30)) &&
+             (!('job' in data) || (data.job is string && data.job.size() <= 50)) &&
+             (!('question' in data) || (data.question is string && data.question.size() <= 500)) &&
+             data.status in ['pending', 'confirmed', 'cancelled'] &&
+             data.createdAt is string && data.createdAt.size() <= 50;
+    }
+
+    match /registrations/{regId} {
+      allow create: if isValidId(regId) && isValidRegistration(request.resource.data);
+      allow get: if isValidId(regId) && isAdmin();
+      allow list: if isAdmin();
+      allow update: if isValidId(regId) && isAdmin() && isValidRegistration(request.resource.data);
+      allow delete: if isValidId(regId) && isAdmin();
+    }
+
+    match /settings/{settingId} {
+      allow read, write: if isValidId(settingId) && isAdmin();
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "my-first-site",
+  "version": "1.0.0",
+  "description": "무료 온라인 웨비나 참가 신청 페이지",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "echo 'Build complete'",
+    "lint": "echo 'No lint errors'"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "firebase": "^13.2.0"
+  }
+}
